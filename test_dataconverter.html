@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Test Dataconverter</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .inputfile {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1;
+    }
+
+    .inputfile+label {
+      font-size: 1.25em;
+      font-weight: 700;
+      /* color: white;
+    background-color: black; */
+      display: inline-block;
+      margin: 0.5rem;
+      padding: 0.5rem;
+      border-style: solid;
+      border-width: 2px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .inputfile:focus+label,
+    .inputfile+label:hover {
+      /* background-color: red; */
+      border-color: red;
+    }
+
+    .inputfile+label {
+      cursor: pointer;
+      /* "hand" cursor */
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <input type="file" id="file" class="inputfile" accept=".csv, .md" v-on:change="onFileChange">
+    <label for="file">Choose a file</label>
+    <br> <h1> Raw</h1>
+    <br>
+    <div v-text="raw"></div>
+    <br>
+    <br> <h1> Header</h1>
+    <br>
+    <template v-for="h in header">
+      <div v-text="h">
+        <div>
+    </template>
+    <h1> Raw</h1><br>
+    <template v-for="item in dataitems">
+      <div v-text="item">
+        <div>
+    </template>
+    </div>
+
+
+    <!-- Script Area -->
+
+    <Script type="text/javascript" src="./dataconverter.js"></Script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+
+
+    <script>
+      'use strict'
+
+
+
+      let app = new Vue({
+        el: "#app",
+        data: {
+          raw: '',
+          dataitems: [],
+          header: []
+        },
+
+        methods: {
+          read_file(file) {
+            let me = this;
+            let reader = new FileReader();
+            let iscsv = file.name.toLowerCase().endsWith("csv");
+            reader.onload = function (e) {
+              let txt = e.target.result;
+              me.raw = txt;
+              let tmp = '';
+              if (iscsv)
+                tmp = $ToJson.csv(txt);
+              else
+                tmp = $ToJson.markdown(txt);
+              me.header = tmp.headers;
+              me.dataitems = tmp.result;
+            };
+            reader.readAsText(file);
+          },
+          onFileChange(e) {
+            var files = e.target.files || e.dataTransfer.files;
+            if (!files.length)
+              return;
+            this.read_file(files[0]);
+          },
+          make_action() {
+            let tmp = $ToJson.markdown(txt, "$");
+            this.header = tmp.headers;
+            this.dataitems = tmp.result;
+          }
+        }
+      });
+    </script>
+
+
+</body>
+
+</html>
